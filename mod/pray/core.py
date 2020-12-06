@@ -19,6 +19,7 @@
 
 from .geode      import Geode
 from .integrator import RK4
+from .icond      import cam
 
 from fadge.metric import KerrSchild
 
@@ -35,10 +36,8 @@ class PRay:
         self.step   = RK4
         self.t      = 0
         self.states = [np.array([[
-            [0, 3, 3, 0, 1, -1, 0, 0],
-            [0, 3, 3, 0, 1, -1, 0, 0],
-        ]], dtype=np.float32)]
-
+            cam([10, np.radians(60), 0], [0, 0])
+        ]])]
 
     def integrate(self, tlist):
         for t in tlist:
