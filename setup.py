@@ -32,4 +32,7 @@ setup(
     packages=find_packages('mod'),
     package_dir={'': 'mod'},
     python_requires='>=3.6', # `pray` uses python3's f-string and typing
+    install_requires=[
+        'fadge',
+    ],
 )
