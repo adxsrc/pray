@@ -17,12 +17,14 @@
 # along with PRay.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from .geode      import Geode
+from .integrator import RK4
+
 from fadge.metric import KerrSchild
-from jax          import numpy as np
+
+from jax import numpy as np
 from jax.experimental.maps import xmap
 
-from .geode       import Geode
-from .integrator  import RK4
 
 class PRay:
 
