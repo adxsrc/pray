@@ -26,9 +26,13 @@ from .integrator  import RK4
 class PRay:
 
     def __init__(self, aspin=0):
-        self.rhs   = Geode(KerrSchild(aspin))
-        self.RK4   = RK4
-        self.state = np.array([0, 3, 3, 0, 1, -1, 0, 0], dtype=np.float32)
+        self.rhs    = Geode(KerrSchild(aspin))
+        self.step   = RK4
+        self.t      = 0
+        self.states = [np.array([0, 3, 3, 0, 1, -1, 0, 0], dtype=np.float32)]
 
-    def step(self, dt):
-        self.state = self.RK4(self.rhs, self.state, dt)
+    def integrate(self, tlist):
+        for t in tlist:
+            if t != self.t:
+                self.states.append(self.step(self.rhs, self.states[-1], t - self.t))
+                self.t = t
