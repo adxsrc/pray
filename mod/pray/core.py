@@ -22,6 +22,7 @@ from .integrator import RK4
 from .icond      import cam
 
 from fadge.metric import KerrSchild
+from fadge.utils  import Nullify
 
 from jax import numpy as np
 from jax.experimental.maps import xmap
@@ -30,11 +31,14 @@ from jax.experimental.maps import xmap
 class PRay:
 
     def __init__(self, aspin=0, r_obs=1000, i_obs=60, j_obs=0):
-        metric = KerrSchild(aspin)
-        rhs    = Geode(metric)
+        metric  = KerrSchild(aspin)
+        nullify = Nullify(metric)
+        rhs     = Geode(metric)
 
-        rij   = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
-        icond = lambda ab: cam(rij, ab)
+        rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
+        def icond(ab):
+            s = cam(rij, ab)
+            return np.concatenate([s[:4], nullify(s[:4], s[4:])])
 
         axmap = {0:'alpha', 1:'beta'}
         a, b  = np.linspace(-10,10,65), np.linspace(-10,10,65)
