@@ -17,12 +17,13 @@
 # along with PRay.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from .integrator import RK4
-from .icond      import cam
+from .icond import cam
 
 from fadge.metric import KerrSchild
 from fadge.geode  import Geode
 from fadge.utils  import Nullify
+
+from xaj import RK4
 
 from jax import numpy as np
 from jax.experimental.maps import xmap
