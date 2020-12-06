@@ -19,6 +19,7 @@
 
 from fadge.metric import KerrSchild
 from jax          import numpy as np
+from jax.experimental.maps import xmap
 
 from .geode       import Geode
 from .integrator  import RK4
@@ -26,10 +27,16 @@ from .integrator  import RK4
 class PRay:
 
     def __init__(self, aspin=0):
-        self.rhs    = Geode(KerrSchild(aspin))
+        axmap = {0:'alpha', 1:'beta'}
+        rhs   = Geode(KerrSchild(aspin))
+        self.rhs    = xmap(rhs, in_axes=axmap, out_axes=axmap)
         self.step   = RK4
         self.t      = 0
-        self.states = [np.array([0, 3, 3, 0, 1, -1, 0, 0], dtype=np.float32)]
+        self.states = [np.array([[
+            [0, 3, 3, 0, 1, -1, 0, 0],
+            [0, 3, 3, 0, 1, -1, 0, 0],
+        ]], dtype=np.float32)]
+
 
     def integrate(self, tlist):
         for t in tlist:
