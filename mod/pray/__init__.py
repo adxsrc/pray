@@ -16,4 +16,4 @@
 # You should have received a copy of the GNU General Public License
 # along with PRay.  If not, see <http://www.gnu.org/licenses/>.
 
-from . import integrator
+from .core import PRay
