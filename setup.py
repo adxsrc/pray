@@ -25,7 +25,7 @@ from setuptools import setup, find_packages
 setup(
     name='pray',
     version='0.1.0',
-    url='https://github.com/luxsrc/pray',
+    url='https://github.com/adxsrc/pray',
     author='Chi-kwan Chan',
     author_email='chanc@arizona.edu',
     description='General relativistic ray tracing in python based on JAX',
