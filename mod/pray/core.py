@@ -17,11 +17,11 @@
 # along with PRay.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from .geode      import Geode
 from .integrator import RK4
 from .icond      import cam
 
 from fadge.metric import KerrSchild
+from fadge.geode  import Geode
 from fadge.utils  import Nullify
 
 from jax import numpy as np
@@ -32,8 +32,8 @@ class PRay:
 
     def __init__(self, aspin=0, r_obs=1000, i_obs=60, j_obs=0):
         metric  = KerrSchild(aspin)
-        nullify = Nullify(metric)
         rhs     = Geode(metric)
+        nullify = Nullify(metric)
 
         rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
         def icond(ab):
