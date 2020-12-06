@@ -29,15 +29,21 @@ from jax.experimental.maps import xmap
 
 class PRay:
 
-    def __init__(self, aspin=0):
+    def __init__(self, aspin=0, r_obs=1000, i_obs=60, j_obs=0):
+        metric = KerrSchild(aspin)
+        rhs    = Geode(metric)
+
+        rij   = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
+        icond = lambda ab: cam(rij, ab)
+
         axmap = {0:'alpha', 1:'beta'}
-        rhs   = Geode(KerrSchild(aspin))
-        self.rhs    = xmap(rhs, in_axes=axmap, out_axes=axmap)
+        a, b  = np.linspace(-10,10,65), np.linspace(-10,10,65)
+        ab    = np.array(np.meshgrid(a, b)).T
+
+        self.rhs    =  xmap(rhs,   in_axes=axmap, out_axes=axmap)
+        self.states = [xmap(icond, in_axes=axmap, out_axes=axmap)(ab)]
         self.step   = RK4
         self.t      = 0
-        self.states = [np.array([[
-            cam([10, np.radians(60), 0], [0, 0])
-        ]])]
 
     def integrate(self, tlist):
         for t in tlist:
