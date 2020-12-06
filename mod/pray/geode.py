@@ -22,12 +22,14 @@ from jax.numpy        import dot
 from jax.numpy.linalg import inv
 
 from jax import jacfwd
+from jax import jit
 
 
 def Geode(metric):
 
     dmetric = jacfwd(metric) # "render" the Jacobian of the metric function
 
+    @jit
     def rhs(state):
         x  = state[:4]
         v  = state[4:]
