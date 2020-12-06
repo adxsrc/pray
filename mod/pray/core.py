@@ -45,13 +45,12 @@ class PRay:
         a, b  = np.linspace(-10,10,65), np.linspace(-10,10,65)
         ab    = np.array(np.meshgrid(a, b)).T
 
-        self.rhs    =  xmap(rhs,   in_axes=axmap, out_axes=axmap)
         self.states = [xmap(icond, in_axes=axmap, out_axes=axmap)(ab)]
-        self.step   = RK4
+        self.step   = RK4(xmap(rhs, in_axes=axmap, out_axes=axmap))
         self.t      = 0
 
     def integrate(self, tlist):
         for t in tlist:
             if t != self.t:
-                self.states.append(self.step(self.rhs, self.states[-1], t - self.t))
+                self.states.append(self.step(self.states[-1], t - self.t))
                 self.t = t
