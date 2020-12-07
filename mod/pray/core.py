@@ -23,7 +23,7 @@ from fadge.metric import KerrSchild
 from fadge.geode  import Geode
 from fadge.utils  import Nullify
 
-from xaj import RK4
+from xaj import DP5
 
 from jax import numpy as np
 from jax.experimental.maps import xmap
@@ -31,26 +31,32 @@ from jax.experimental.maps import xmap
 
 class PRay:
 
-    def __init__(self, aspin=0, r_obs=1000, i_obs=60, j_obs=0):
+    def __init__(self, aspin=0, r_obs=1000, i_obs=60, j_obs=0, *args, **kwargs):
         metric  = KerrSchild(aspin)
-        rhs     = Geode(metric)
+        geode   = Geode(metric)
         nullify = Nullify(metric)
 
         rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
-        def icond(ab):
+        def icond(ab): # closure on rij
             s = cam(rij, ab)
             return np.concatenate([s[:4], nullify(s[:4], s[4:])])
 
-        axmap = {0:'alpha', 1:'beta'}
-        a, b  = np.linspace(-10,10,65), np.linspace(-10,10,65)
-        ab    = np.array(np.meshgrid(a, b)).T
+        smap = {0:'alpha', 1:'beta'}
+        a, b = np.linspace(-10,10,65), np.linspace(-10,10,65)
+        ab   = np.array(np.meshgrid(a, b)).T
 
-        self.states = [xmap(icond, in_axes=axmap, out_axes=axmap)(ab)]
-        self.step   = RK4(xmap(rhs, in_axes=axmap, out_axes=axmap))
-        self.t      = 0
+        rhs   = xmap(geode, in_axes=smap, out_axes=smap)
+        state = xmap(icond, in_axes=smap, out_axes=smap)(ab)
 
-    def integrate(self, tlist):
-        for t in tlist:
-            if t != self.t:
-                self.states.append(self.step(self.states[-1], t - self.t))
-                self.t = t
+        self.sol = DP5(lambda l, s: rhs(s), 0.0, state, *args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        self.sol(*args, **kwargs)
+
+    @property
+    def lambdas(self):
+        return self.sol.xs
+
+    @property
+    def states(self):
+        return self.sol.ys
