@@ -20,43 +20,27 @@
 from .icond import cam
 
 from fadge.metric import KerrSchild
-from fadge.geode  import JA
+from fadge.geode  import Geode
 from fadge.utils  import Nullify
-
-from xaj import DP5
 
 from jax import numpy as np
 from jax.experimental.maps import xmap
 
 
-class PRay:
+class PRay(Geode):
 
     def __init__(self, aspin=0, r_obs=1000, i_obs=60, j_obs=0, *args, **kwargs):
-        metric  = KerrSchild(aspin)
-        geode   = JA(metric)
-        nullify = Nullify(metric)
+        metric = KerrSchild(aspin)
 
+        nullify = Nullify(metric)
         rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
         def icond(ab): # closure on rij
             s = cam(rij, ab)
             return np.concatenate([s[:4], nullify(s[:4], s[4:])])
 
-        smap = {0:'alpha', 1:'beta'}
-        a, b = np.linspace(-10,10,65), np.linspace(-10,10,65)
-        ab   = np.array(np.meshgrid(a, b)).T
-
-        rhs   = xmap(geode, in_axes=smap, out_axes=smap)
+        smap  = {0:'alpha', 1:'beta'}
+        a, b  = np.linspace(-10,10,65), np.linspace(-10,10,65)
+        ab    = np.array(np.meshgrid(a, b)).T
         state = xmap(icond, in_axes=smap, out_axes=smap)(ab)
 
-        self.sol = DP5(lambda l, s: rhs(s), 0.0, state, *args, **kwargs)
-
-    def __call__(self, *args, **kwargs):
-        self.sol(*args, **kwargs)
-
-    @property
-    def lambdas(self):
-        return self.sol.xs
-
-    @property
-    def states(self):
-        return self.sol.ys
+        super().__init__(metric, 0, state, *args, **kwargs)
