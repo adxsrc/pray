@@ -20,7 +20,7 @@
 from .icond import cam
 
 from fadge.metric import KerrSchild
-from fadge.geode  import Geode
+from fadge.geode  import JA
 from fadge.utils  import Nullify
 
 from xaj import DP5
@@ -33,7 +33,7 @@ class PRay:
 
     def __init__(self, aspin=0, r_obs=1000, i_obs=60, j_obs=0, *args, **kwargs):
         metric  = KerrSchild(aspin)
-        geode   = Geode(metric)
+        geode   = JA(metric)
         nullify = Nullify(metric)
 
         rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
