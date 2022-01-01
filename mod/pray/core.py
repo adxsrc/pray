@@ -31,7 +31,7 @@ class PRay(Geode):
 
     def __init__(self,
         aspin=0,
-        eps=1e-2,
+        fhlim=0.75, eps=1e-2,
         **kwargs,
     ):
         aa = aspin * aspin
@@ -48,9 +48,13 @@ class PRay(Geode):
             rr = np.sqrt(kk * kk + aa * zz) + kk
             return np.sqrt(rr)
 
+        def hlim(l, s): # closure on fhlim
+            return KSr(s[0]) * fhlim + 1
+
         def run(l, s): # closure on reh and eps
             return KSr(s[0]) >= reh + eps
 
+        kwargs['hlim'  ] = hlim
         kwargs['filter'] = run
 
         self.metric  = KerrSchild(aspin)
