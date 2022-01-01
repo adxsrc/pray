@@ -76,4 +76,7 @@ class PRay(Geode):
         )(ab)
 
     def geode(self, L=None):
+        if L is None:
+            L = -2 * self.rij[0]
+
         self.geode = Geode(self.metric, 0, self.s0, L=L, **self.kwargs)
