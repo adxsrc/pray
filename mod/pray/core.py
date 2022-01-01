@@ -29,18 +29,13 @@ from jax.experimental.maps import xmap
 
 class PRay(Geode):
 
-    def __init__(self, aspin=0, r_obs=1000, i_obs=60, j_obs=0, *args, **kwargs):
-        metric = KerrSchild(aspin)
+    def __init__(self,
+        aspin=0,
+        **kwargs,
+    ):
+        self.metric  = KerrSchild(aspin)
+        self.nullify = Nullify(self.metric)
+        self.kwargs  = kwargs
 
-        nullify = Nullify(metric)
-        rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
-        def icond(ab): # closure on rij
-            s = cam(rij, ab)
-            return np.concatenate([s[:4], nullify(s[:4], s[4:])])
-
-        smap  = {0:'alpha', 1:'beta'}
-        a, b  = np.linspace(-10,10,65), np.linspace(-10,10,65)
-        ab    = np.array(np.meshgrid(a, b)).T
-        state = xmap(icond, in_axes=smap, out_axes=smap)(ab)
-
-        super().__init__(metric, 0, state, *args, **kwargs)
+    def geode(self, L=None):
+        self.geode = Geode(self.metric, 0, None, L=L, **self.kwargs)
