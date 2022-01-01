@@ -37,5 +37,5 @@ class PRay(Geode):
         self.nullify = Nullify(self.metric)
         self.kwargs  = kwargs
 
-    def geode(self, L=None):
-        self.geode = Geode(self.metric, 0, None, L=L, **self.kwargs)
+    def set_cam(self, r_obs=1e4, i_obs=60, j_obs=0):
+        self.rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
