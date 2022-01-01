@@ -31,6 +31,6 @@ def cam(rij, ab):
     x  = R0     * cj - ab[0] * sj
 
     return np.array([
-        0, x, y, z,
-        1, si * cj, si * sj, ci,
+        [0, x, y, z],
+        [1, si * cj, si * sj, ci],
     ])

@@ -39,3 +39,14 @@ class PRay(Geode):
 
     def set_cam(self, r_obs=1e4, i_obs=60, j_obs=0):
         self.rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
+
+    def set_pixels(self, a, b):
+        def ic(ab): # closure on self.rij and self.nullify
+            s = cam(self.rij, ab)
+            return np.array([s[0], self.nullify(s[0],s[1])])
+        ab = np.array([a, b])
+        self.s0 = xmap(
+            ic,
+            in_axes ={i  :i for i in range(1,ab.ndim)},
+            out_axes={i+1:i for i in range(1,ab.ndim)},
+        )(ab)
