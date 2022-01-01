@@ -60,6 +60,7 @@ class PRay(Geode):
         self.metric  = KerrSchild(aspin)
         self.nullify = Nullify(self.metric)
         self.kwargs  = kwargs
+        self._geode  = None
 
     def set_cam(self, r_obs=1e4, i_obs=60, j_obs=0):
         self.rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
@@ -75,8 +76,12 @@ class PRay(Geode):
             out_axes={i+1:i for i in range(1,ab.ndim)},
         )(ab)
 
-    def geode(self, L=None):
+    def geode(self, L=None, **kwargs):
         if L is None:
             L = -2 * self.rij[0]
 
-        self.geode = Geode(self.metric, 0, self.s0, L=L, **self.kwargs)
+        if self._geode is None:
+            self.kwargs.update(kwargs)
+            self._geode = Geode(self.metric, 0, self.s0, L=L, **self.kwargs)
+        else:
+            self._geode.solve(L)
