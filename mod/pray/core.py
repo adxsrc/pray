@@ -50,3 +50,6 @@ class PRay(Geode):
             in_axes ={i  :i for i in range(1,ab.ndim)},
             out_axes={i+1:i for i in range(1,ab.ndim)},
         )(ab)
+
+    def geode(self, L=None):
+        self.geode = Geode(self.metric, 0, self.s0, L=L, **self.kwargs)
