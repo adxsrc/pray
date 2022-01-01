@@ -31,8 +31,28 @@ class PRay(Geode):
 
     def __init__(self,
         aspin=0,
+        eps=1e-2,
         **kwargs,
     ):
+        aa = aspin * aspin
+        if aspin < 1:
+            reh = 1.0 + np.sqrt(1 - aa)
+            print('Radius of outer event horizon:', reh)
+        else:
+            reh = 0
+            print('There is no event horizon')
+
+        def KSr(x): # closure on aa
+            zz = x[3] * x[3]
+            kk = 0.5 * (x[1] * x[1] + x[2] * x[2] + zz - aa)
+            rr = np.sqrt(kk * kk + aa * zz) + kk
+            return np.sqrt(rr)
+
+        def run(l, s): # closure on reh and eps
+            return KSr(s[0]) >= reh + eps
+
+        kwargs['filter'] = run
+
         self.metric  = KerrSchild(aspin)
         self.nullify = Nullify(self.metric)
         self.kwargs  = kwargs
