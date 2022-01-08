@@ -66,6 +66,12 @@ class PRay:
         a, b = np.meshgrid(axes, axes)
         self.set_pixels(a, b)
 
+    def set_ring(self, r=5.2, n=32):
+        phi = 2 * np.pi * np.arange(n) / n
+        a   = r * np.cos(phi)
+        b   = r * np.sin(phi)
+        self.set_pixels(a, b)
+
     def geode(self, L=None, **kwargs):
 
         if self._ic is not None:
