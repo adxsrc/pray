@@ -63,7 +63,7 @@ class PRay:
 
     def set_image(self, fov=16, n=32):
         axes = fov * ((np.arange(n) + 0.5) / n - 0.5)
-        a, b = np.meshgrid(axes, axes)
+        a, b = np.meshgrid(axes, axes, indexing='ij')
         self.set_pixels(a, b)
 
     def set_ring(self, r=5.2, n=32):
