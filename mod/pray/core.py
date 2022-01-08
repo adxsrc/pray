@@ -29,8 +29,9 @@ from jax.experimental.maps import xmap
 
 class PRay:
 
-    def __init__(self, aspin=0, **kwargs):
+    def __init__(self, aspin=0, dtype=np.float32, **kwargs):
         self.aspin   = aspin
+        self.dtype   = dtype
         self.kwargs  = kwargs
 
         self.metric  = KerrSchild(aspin)
@@ -48,13 +49,13 @@ class PRay:
             print('There is no event horizon')
 
     def set_cam(self, r_obs=1e4, i_obs=60, j_obs=0):
-        self.rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
+        self.rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)], dtype=self.dtype)
 
     def set_pixels(self, a, b):
         def ic(ab): # closure on self.rij and self.nullify
             s = cam(self.rij, ab)
-            return np.array([s[0], self.nullify(s[0],s[1])])
-        ab = np.array([a, b])
+            return np.array([s[0], self.nullify(s[0],s[1])], dtype=ab.dtype)
+        ab = np.array([a, b], dtype=self.dtype)
         self._ic = xmap(
             ic,
             in_axes ={i  :i for i in range(1,ab.ndim)},
@@ -75,7 +76,7 @@ class PRay:
     def geode(self, L=None, **kwargs):
 
         if self._ic is not None:
-            kwargs = {**self.kwargs, **kwargs} # compose kwargs
+            kwargs = {'dtype':self.dtype, **self.kwargs, **kwargs} # compose kwargs
 
             aa = self.aspin * self.aspin
             def KSr(x): # closure on aa

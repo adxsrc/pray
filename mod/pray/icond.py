@@ -33,4 +33,4 @@ def cam(rij, ab):
     return np.array([
         [0, x, y, z],
         [1, si * cj, si * sj, ci],
-    ])
+    ], dtype=ab.dtype)
