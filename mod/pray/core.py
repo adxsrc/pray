@@ -54,7 +54,7 @@ class PRay:
             s = cam(self.rij, ab)
             return np.array([s[0], self.nullify(s[0],s[1])])
         ab = np.array([a, b])
-        self.s0 = xmap(
+        self.ic = xmap(
             ic,
             in_axes ={i  :i for i in range(1,ab.ndim)},
             out_axes={i+1:i for i in range(1,ab.ndim)},
@@ -89,7 +89,7 @@ class PRay:
             if 'filter' not in kwargs:
                 kwargs['filter'] = run
 
-            self._geode = Geode(self.metric, 0, self.s0, **kwargs)
+            self._geode = Geode(self.metric, 0, self.ic, **kwargs)
         elif len(kwargs) > 0:
             print('Warning: ignore `kwargs`')
 
