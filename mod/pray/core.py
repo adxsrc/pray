@@ -76,12 +76,17 @@ class PRay(Geode):
             out_axes={i+1:i for i in range(1,ab.ndim)},
         )(ab)
 
-    def geode(self, L=None, **kwargs):
-        if L is None:
-            L = -2 * self.rij[0]
+    def geode(self, L=None):
 
         if self._geode is None:
-            self.kwargs.update(kwargs)
-            self._geode = Geode(self.metric, 0, self.s0, L=L, **self.kwargs)
-        else:
-            self._geode.solve(L)
+            self._geode = Geode(self.metric, 0, self.s0, **self.kwargs)
+
+        if L is None:
+            L = -2 * self.rij[0]
+        try:
+            len(L)
+        except: # L is a scalar
+            self._geode.extend(L)
+            return self._geode.lambdas, self._geode.states
+        else:   # L is not a scalar
+            return self._geode(L)
