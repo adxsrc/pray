@@ -73,10 +73,10 @@ class PRay:
         b   = r * np.sin(phi)
         self.set_pixels(a, b)
 
-    def geode(self, L=None, **kwargs):
+    def geode(self, L=None, N=None, **kwargs):
 
         if self._ic is not None:
-            kwargs = {'dtype':self.dtype, **self.kwargs, **kwargs} # compose kwargs
+            kwargs = {'dtype':self.dtype, 'N':N, **self.kwargs, **kwargs} # compose kwargs
 
             aa = self.aspin * self.aspin
             def KSr(x): # closure on aa
@@ -107,7 +107,7 @@ class PRay:
         try:
             len(L)
         except: # L is a scalar
-            self._geode.extend(L)
+            self._geode.extend(L, N=N)
             return self._geode.lambdas, self._geode.states
         else:   # L is not a scalar
-            return self._geode(L)
+            return self._geode(L, N=N)
