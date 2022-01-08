@@ -27,40 +27,24 @@ from jax import numpy as np
 from jax.experimental.maps import xmap
 
 
-class PRay(Geode):
+class PRay:
 
-    def __init__(self,
-        aspin=0,
-        fhlim=0.75, eps=1e-2,
-        **kwargs,
-    ):
-        aa = aspin * aspin
-        if aspin < 1:
-            reh = 1.0 + np.sqrt(1 - aa)
-            print('Radius of outer event horizon:', reh)
-        else:
-            reh = 0
-            print('There is no event horizon')
-
-        def KSr(x): # closure on aa
-            zz = x[3] * x[3]
-            kk = 0.5 * (x[1] * x[1] + x[2] * x[2] + zz - aa)
-            rr = np.sqrt(kk * kk + aa * zz) + kk
-            return np.sqrt(rr)
-
-        def hlim(l, s): # closure on fhlim
-            return KSr(s[0]) * fhlim + 1
-
-        def run(l, s): # closure on reh and eps
-            return KSr(s[0]) >= reh + eps
-
-        kwargs['hlim'  ] = hlim
-        kwargs['filter'] = run
+    def __init__(self, aspin=0, **kwargs):
+        self.aspin   = aspin
+        self.kwargs  = kwargs
 
         self.metric  = KerrSchild(aspin)
         self.nullify = Nullify(self.metric)
-        self.kwargs  = kwargs
+
         self._geode  = None
+
+        aa = self.aspin * self.aspin
+        if aa < 1:
+            self.reh = 1.0 + np.sqrt(1 - aa)
+            print('Radius of outer event horizon:', self.reh)
+        else:
+            self.reh = 0
+            print('There is no event horizon')
 
     def set_cam(self, r_obs=1e4, i_obs=60, j_obs=0):
         self.rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)])
@@ -76,10 +60,33 @@ class PRay(Geode):
             out_axes={i+1:i for i in range(1,ab.ndim)},
         )(ab)
 
-    def geode(self, L=None):
+    def geode(self, L=None, **kwargs):
 
         if self._geode is None:
-            self._geode = Geode(self.metric, 0, self.s0, **self.kwargs)
+            kwargs = {**self.kwargs, **kwargs} # compose kwargs
+
+            aa = self.aspin * self.aspin
+            def KSr(x): # closure on aa
+                zz = x[3] * x[3]
+                kk = 0.5 * (x[1] * x[1] + x[2] * x[2] + zz - aa)
+                rr = np.sqrt(kk * kk + aa * zz) + kk
+                return np.sqrt(rr)
+
+            fhlim = kwargs.pop('fhlim', 0.75)
+            def hlim(l, s): # closure on fhlim
+                return KSr(s[0]) * fhlim + 1
+            if 'hlim' not in kwargs:
+                kwargs['hlim'] = hlim
+
+            eps = kwargs.pop('eps', 1e-2)
+            def run(l, s): # closure on reh and eps
+                return KSr(s[0]) >= self.reh + eps
+            if 'filter' not in kwargs:
+                kwargs['filter'] = run
+
+            self._geode = Geode(self.metric, 0, self.s0, **kwargs)
+        elif len(kwargs) > 0:
+            print('Warning: ignore `kwargs`')
 
         if L is None:
             L = -2 * self.rij[0]
