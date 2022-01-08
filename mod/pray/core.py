@@ -37,6 +37,7 @@ class PRay:
         self.nullify = Nullify(self.metric)
 
         self._geode  = None
+        self._ic     = None
 
         aa = self.aspin * self.aspin
         if aa < 1:
@@ -54,7 +55,7 @@ class PRay:
             s = cam(self.rij, ab)
             return np.array([s[0], self.nullify(s[0],s[1])])
         ab = np.array([a, b])
-        self.ic = xmap(
+        self._ic = xmap(
             ic,
             in_axes ={i  :i for i in range(1,ab.ndim)},
             out_axes={i+1:i for i in range(1,ab.ndim)},
@@ -67,7 +68,7 @@ class PRay:
 
     def geode(self, L=None, **kwargs):
 
-        if self._geode is None:
+        if self._ic is not None:
             kwargs = {**self.kwargs, **kwargs} # compose kwargs
 
             aa = self.aspin * self.aspin
@@ -89,7 +90,8 @@ class PRay:
             if 'filter' not in kwargs:
                 kwargs['filter'] = run
 
-            self._geode = Geode(self.metric, 0, self.ic, **kwargs)
+            self._geode = Geode(self.metric, 0, self._ic, **kwargs)
+            self._ic    = None
         elif len(kwargs) > 0:
             print('Warning: ignore `kwargs`')
 
