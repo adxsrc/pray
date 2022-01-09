@@ -49,7 +49,8 @@ class PRay:
             print('There is no event horizon')
 
     def set_cam(self, r_obs=1e4, i_obs=60, j_obs=0):
-        self.rij = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)], dtype=self.dtype)
+        self.rij    = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)], dtype=self.dtype)
+        self.kwargs = {'h':0.75*r_obs, **self.kwargs}
 
     def set_pixels(self, a, b):
         def ic(ab): # closure on self.rij and self.nullify
