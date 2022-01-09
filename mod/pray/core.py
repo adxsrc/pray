@@ -45,7 +45,7 @@ class PRay:
             self.reh = 1.0 + np.sqrt(1 - aa)
             print('Radius of outer event horizon:', self.reh)
         else:
-            self.reh = 0
+            self.reh = np.nan
             print('There is no event horizon')
 
     def set_cam(self, r_obs=1e4, i_obs=60, j_obs=0):
@@ -85,17 +85,21 @@ class PRay:
                 rr = np.sqrt(kk * kk + aa * zz) + kk
                 return np.sqrt(rr)
 
+            absaspin = abs(self.aspin)
+            def KSd(x): # closure on absaspin
+                dR = np.sqrt(x[1] * x[1] + x[2] * x[2]) - absaspin
+                return np.sqrt(dR * dR + x[3] * x[3])
+
             fhlim = kwargs.pop('fhlim', 0.75)
-            def hlim(l, s): # closure on fhlim
-                return KSr(s[0]) * fhlim + 1
             if 'hlim' not in kwargs:
-                kwargs['hlim'] = hlim
+                kwargs['hlim'] = lambda l, s: KSr(s[0]) * fhlim + 1
 
             eps = kwargs.pop('eps', 1e-2)
-            def run(l, s): # closure on reh and eps
-                return KSr(s[0]) >= self.reh + eps
             if 'filter' not in kwargs:
-                kwargs['filter'] = run
+                if np.isnan(self.reh):
+                    kwargs['filter'] = lambda l, s: KSd(s[0]) >= eps
+                else:
+                    kwargs['filter'] = lambda l, s: KSr(s[0]) >= self.reh + eps
 
             self._geode = Geode(self.metric, 0, self._ic, **kwargs)
             self._ic    = None
