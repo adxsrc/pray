@@ -29,7 +29,7 @@ from jax.experimental.maps import xmap
 
 class PRay:
 
-    def __init__(self, aspin=0, dtype=np.float32, **kwargs):
+    def __init__(self, aspin=0, hp=False, dtype=np.float32, **kwargs):
         self.aspin   = aspin
         self.dtype   = dtype
         self.kwargs  = kwargs
@@ -37,15 +37,19 @@ class PRay:
         self.metric  = KerrSchild(aspin)
         self.nullify = Nullify(self.metric)
 
+        self.reh     = np.nan
         self._geode  = None
         self._ic     = None
 
         aa = self.aspin * self.aspin
-        if aa < 1:
-            self.reh = 1.0 + np.sqrt(1 - aa)
-            print('Radius of outer event horizon:', self.reh)
+        if aa <= 1:
+            reh = 1.0 + np.sqrt(1 - aa)
+            print('Radius of outer event horizon:', reh)
+            if hp:
+                print('Horizon penetrating')
+            else:
+                self.reh = reh
         else:
-            self.reh = np.nan
             print('There is no event horizon')
 
     def set_cam(self, r_obs=1e4, i_obs=60, j_obs=0):
