@@ -50,7 +50,7 @@ class PRay:
 
     def set_cam(self, r_obs=1e4, i_obs=60, j_obs=0):
         self.rij    = np.array([r_obs, np.radians(i_obs), np.radians(j_obs)], dtype=self.dtype)
-        self.kwargs = {'h':0.75*r_obs, **self.kwargs}
+        self.kwargs = {'L':-2*r_obs, 'h':0.75*r_obs, **self.kwargs}
 
     def set_pixels(self, a, b):
         def ic(ab): # closure on self.rij and self.nullify
@@ -77,7 +77,7 @@ class PRay:
     def geode(self, L=None, N=None, **kwargs):
 
         if self._ic is not None:
-            kwargs = {'dtype':self.dtype, 'N':N, **self.kwargs, **kwargs} # compose kwargs
+            kwargs = {'dtype':self.dtype, **self.kwargs, **kwargs} # compose kwargs
 
             aa = self.aspin * self.aspin
             def KSr(x): # closure on aa
@@ -108,7 +108,7 @@ class PRay:
             print('Warning: ignore `kwargs`')
 
         if L is None:
-            L = -2 * self.rij[0]
+            L = self.kwargs['L']
         try:
             len(L)
         except: # L is a scalar
