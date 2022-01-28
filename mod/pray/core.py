@@ -80,7 +80,8 @@ class PRay:
 
     def set_sphorbit(self, r=3):
         s = sphorbit(self.aspin, r)
-        self._ic = np.array([s[0], self.nullify(s[0],s[1])])
+        self._ic    = np.array([s[0], self.nullify(s[0],s[1])])
+        self.kwargs = {'L':100, 'h':1, **self.kwargs}
 
     def geode(self, L=None, N=None, **kwargs):
 
