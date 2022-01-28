@@ -87,6 +87,8 @@ class PRay:
 
         if self._ic is not None:
             kwargs = {'dtype':self.dtype, **self.kwargs, **kwargs} # compose kwargs
+            if L is not None:
+                kwargs.pop('L')
 
             aa = self.aspin * self.aspin
             def KSr(x): # closure on aa
