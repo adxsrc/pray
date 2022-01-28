@@ -18,6 +18,7 @@
 
 
 from jax import numpy as np
+from fadge.utils import Nullify
 
 
 def cam(rij, ab):
@@ -34,3 +35,34 @@ def cam(rij, ab):
         [0, x, y, z],
         [1, si * cj, si * sj, ci],
     ], dtype=ab.dtype)
+
+
+def sphorbit(aspin, r0):
+
+    def PHI(a, r):
+        if a == 0 and r == 3:
+            return 0 # 2 * a + (9/2) * (r-3) / a
+        elif a == 1:
+            return - (r * r - 2 * r - 1)
+        else:
+            return - (r * r * r - 3 * r * r + a * a * r + a * a) / (a * (r - 1))
+
+    def Q(a, r):
+        if a == 0 and r == 3:
+            return 27 # (r**3 / (r-1)**2) * (4 - r * (r-3)**2 / a**2)
+        if a == 1:
+            return - r*r*r * (r - 4)
+        else:
+            return - (r*r*r * (r*r*r - 6*r*r + 9*r - 4*a*a)) / (a*a * (r - 1) * (r - 1))
+
+    def thetadot(a, r):
+        return np.sqrt(Q(a, r))
+
+    def phidot(a, r):
+        return (2*r*a + (r*r - 2*r) * PHI(a, r)) / (r*r + a*a - 2*r)
+
+    R = np.sqrt(r0*r0 + aspin*aspin)
+    return np.array([
+        [0, R, 0, 0],
+        [1, 0, R * phidot(aspin, r0), -r0 * thetadot(aspin, r0)],
+    ])

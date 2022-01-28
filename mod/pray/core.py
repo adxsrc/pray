@@ -17,7 +17,7 @@
 # along with PRay.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from .icond import cam
+from .icond import cam, sphorbit
 
 from fadge.metric import KerrSchild
 from fadge.geode  import Geode
@@ -77,6 +77,10 @@ class PRay:
         a   = r * np.cos(phi)
         b   = r * np.sin(phi)
         self.set_pixels(a, b)
+
+    def set_sphorbit(self, r=3):
+        s = sphorbit(self.aspin, r)
+        self._ic = np.array([s[0], self.nullify(s[0],s[1])])
 
     def geode(self, L=None, N=None, **kwargs):
 
