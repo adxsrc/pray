@@ -72,6 +72,12 @@ class PRay:
         a, b = np.meshgrid(axes, axes, indexing='ij')
         self.set_pixels(a, b)
 
+    def set_axis(self, fov=16, n=32, PA=90):
+        r = fov * ((np.arange(n) + 0.5) / n - 0.5)
+        a = r * np.sin(PA * np.pi / 180)
+        b = r * np.cos(PA * np.pi / 180)
+        self.set_pixels(a, b)
+
     def set_ring(self, r=5.2, n=32):
         phi = 2 * np.pi * np.arange(n) / n
         a   = r * np.cos(phi)
