@@ -1,3 +1,5 @@
+[![Lint and test pray](https://github.com/adxsrc/pray/actions/workflows/python-test.yml/badge.svg)](https://github.com/adxsrc/pray/actions/workflows/python-test.yml)
+
 # `PRay`
 
 `PRay` is a GPU-accelerated geodesic integrator for performing general
