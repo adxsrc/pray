@@ -1,4 +1,5 @@
-[![Lint and test pray](https://github.com/adxsrc/pray/actions/workflows/python-test.yml/badge.svg)](https://github.com/adxsrc/pray/actions/workflows/python-test.yml)
+[![Lint and test PRay](https://github.com/adxsrc/pray/actions/workflows/python-test.yml/badge.svg)](https://github.com/adxsrc/pray/actions/workflows/python-test.yml)
+[![Publish PRay to PyPI](https://github.com/adxsrc/pray/actions/workflows/python-publish.yml/badge.svg)](https://github.com/adxsrc/pray/actions/workflows/python-publish.yml)
 
 # `PRay`
 
