@@ -72,8 +72,8 @@ class PRay:
         a, b = np.meshgrid(axes, axes, indexing='ij')
         self.set_pixels(a, b)
 
-    def set_axis(self, fov=16, n=32, PA=90):
-        r = fov * ((np.arange(n) + 0.5) / n - 0.5)
+    def set_axis(self, fov=16, n=32, PA=90, alpha0=0):
+        r = fov * ((np.arange(n) + 0.5) / n - 0.5) + alpha0
         a = r * np.sin(PA * np.pi / 180)
         b = r * np.cos(PA * np.pi / 180)
         self.set_pixels(a, b)
